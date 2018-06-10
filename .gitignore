@@ -52,11 +52,7 @@ backup
 
 # webpack map
 *.map
-hooks/
 platforms/
-plugins/
-webpack/
-www/
 node_modules/
-platforms/
 dump.rdb
+.lock

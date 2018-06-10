@@ -1,7 +1,7 @@
 # encoding: utf-8
 # auto build (phonegap+Framework7+vue+Flask), then git push to heroku
 # http://psutil.readthedocs.io/
-# python git.py -h: means push to heroku
+# python auto.py -h: means push to heroku
 
 import os, sys, time, re
 import psutil
@@ -12,10 +12,14 @@ INDEX_HTML = 'app/templates/index.html'
 NODE_DIR = "C:/Program Files/nodejs/"
 if not os.path.exists(NODE_DIR):
   NODE_DIR = "C:/Program Files (x86)/nodejs/"
-NODE = NODE_DIR + "node.exe"
-PHONEGAP = NODE_DIR + "node_modules/phonegap/bin/phonegap.js"
-if not os.path.exists(PHONEGAP):
-  PHONEGAP = 'C:/Users/{}/AppData/Roaming/npm/'.format(os.environ.get('username')) + 'node_modules/phonegap/bin/phonegap.js'
+  NODE = NODE_DIR + "node.exe"
+  PHONEGAP = NODE_DIR + "node_modules/phonegap/bin/phonegap.js"
+  if not os.path.exists(PHONEGAP):
+    PHONEGAP = 'C:/Users/{}/AppData/Roaming/npm/'.format(os.environ.get('username')) + 'node_modules/phonegap/bin/phonegap.js'
+# Linux
+if not os.path.exists(NODE_DIR):
+  PHONEGAP = 'phonegap'
+
 
 def find_procs_by_name(name):
   "Return a list of processes matching 'name'."
@@ -50,7 +54,7 @@ if __name__ == '__main__':
     # for aa in sys.argv:
 
   with psutil.Popen(['git', 'status'], stdout=PIPE) as proc:
-    rsp = (proc.stdout.read().decode('ascii'))
+    rsp = (proc.stdout.read().decode('utf8'))
     is_changed = "no changes added to commit"
     is_clear = "nothing to commit, working directory clean"
     if rsp.find(is_changed):
@@ -64,9 +68,13 @@ if __name__ == '__main__':
     psutil.Process(p).terminate()
   print('======== run phonegap build...')
 
-  with psutil.Popen([NODE, PHONEGAP, 'build', '--release'], stdout=PIPE) as proc:
+  if PHONEGAP=='phonegap':
+    p_cmd = [PHONEGAP, 'build', '--release']
+  else:
+    p_cmd = [NODE, PHONEGAP, 'build', '--release']
+  with psutil.Popen(p_cmd, stdout=PIPE) as proc:
   # with psutil.Popen(["ipconfig"], stdout=PIPE) as proc:
-    print(proc.stdout.read().decode('ascii'))   # 中文系统用 .decode('gbk'), 英文系统：'ascii'
+    print(proc.stdout.read().decode('utf8'))   # 中文系统用 .decode('gbk'), 英文系统：'ascii'
   # os.remove('app/static/main.css')
   # os.remove('app/static/main.js')
 
@@ -74,7 +82,7 @@ if __name__ == '__main__':
   # 删除旧的js/css
   olds = os.listdir('app/static')
   for f in olds:
-  	  if re.search('main[\d]{3,}.', f): os.remove('app/static/'+f)
+    if re.search('main[\d]{3,}.', f): os.remove('app/static/'+f)
   stamp = str(time.time()).split('.')[0]
   # 移动+改名
   os.rename('www/main.js', 'app/static/main{}.js'.format(stamp))

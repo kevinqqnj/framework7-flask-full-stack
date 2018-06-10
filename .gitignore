@@ -41,7 +41,7 @@ nosetests.xml
 # Virtual environment
 venv/
 myenv/
-.env
+#.env
 
 backup
 .idea

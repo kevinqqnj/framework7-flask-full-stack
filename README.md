@@ -9,6 +9,8 @@
 ![snapshot](homepage-admin.png "snapshot")
 
 ## Features:
+- combined Frontend and Backend flow
+- auto push to Heroku by auto.py
 - configurations in `/config.py`
 - Flask_Script: manage application, deployment, command line
 - Flask_sqlalchemy: powerful ORM
